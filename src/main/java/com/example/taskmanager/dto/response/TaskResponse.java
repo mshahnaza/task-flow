@@ -19,5 +19,5 @@ public class TaskResponse {
     private String description;
     private String status;
     private LocalDate dueDate;
-    private List<Category> categories;
+    private List<String> categories;
 }

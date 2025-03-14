@@ -16,5 +16,5 @@ public class CommentResponse {
     private Long id;
     private String content;
     private LocalDateTime createdAt;
-    private Task task;
+    private Long task_id;
 }
