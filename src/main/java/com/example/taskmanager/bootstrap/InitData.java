@@ -49,7 +49,7 @@ public class InitData {
         Task task2 = Task.builder()
                 .title("Read a book")
                 .description("Read 'Clean Code' by Robert C. Martin")
-                .status("Pending")
+                .status("Finished")
                 .dueDate(LocalDate.now().plusWeeks(2))
                 .categories(List.of(personal, hobby))
                 .build();

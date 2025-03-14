@@ -1,7 +1,6 @@
-package com.example.taskmanager.entities;
+package com.example.taskmanager.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+import com.example.taskmanager.entities.Category;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,24 +9,15 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.List;
 
-@Entity
 @Data
-@Builder
 @NoArgsConstructor
+@Builder
 @AllArgsConstructor
-@Table(name = "tasks")
-public class Task {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class TaskResponse {
     private Long id;
     private String title;
     private String description;
     private String status;
     private LocalDate dueDate;
-
-    @ManyToMany
     private List<Category> categories;
-
-    @OneToMany(mappedBy = "task")
-    private List<Comment> comments;
 }
