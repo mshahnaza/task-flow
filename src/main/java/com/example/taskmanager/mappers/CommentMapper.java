@@ -5,6 +5,7 @@ import com.example.taskmanager.entities.Comment;
 import com.example.taskmanager.entities.Task;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 import java.util.List;
 
@@ -15,7 +16,8 @@ public interface CommentMapper {
 
     List<CommentResponse> commentToCommentDtos(List<Comment> comments);
 
+    @Named("taskToLong")
     default Long taskToLong(Task task) {
-        return task.getId();
+        return task != null ? task.getId() : null; // Добавил проверку на null
     }
 }
