@@ -6,10 +6,14 @@ import com.example.taskmanager.entities.Task;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper
 public interface CommentMapper {
-    @Mapping(source = "task", target = "task_id")
+    @Mapping(source = "task", target = "task_id", qualifiedByName = "taskToLong")
     CommentResponse commentToCommentDto(Comment comment);
+
+    List<CommentResponse> commentToCommentDtos(List<Comment> comments);
 
     default Long taskToLong(Task task) {
         return task.getId();
