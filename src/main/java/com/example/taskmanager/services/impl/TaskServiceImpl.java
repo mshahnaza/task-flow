@@ -45,8 +45,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponse> getaAllTasks() {
-        List<Task> tasks = taskRepository.findAll();
+    public List<TaskResponse> getaAllTasks(String status, List<Long> categoryIds, String sortOrder) {
+        List<Task> tasks;
+        if (sortOrder.equals("asc")) {
+            tasks = taskRepository.findTasksSortedByCommentsAsc(status, categoryIds);
+        } else {
+            tasks = taskRepository.findTasksSortedByCommentsDesc(status, categoryIds);
+        }
 
         return tasks.stream()
                 .map(task -> taskMapper.taskToTaskDto(task, commentRepository.countByTask(task)))
