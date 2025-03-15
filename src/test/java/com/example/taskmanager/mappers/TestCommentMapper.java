@@ -4,6 +4,7 @@ import com.example.taskmanager.dto.response.CommentResponse;
 import com.example.taskmanager.entities.Comment;
 import com.example.taskmanager.entities.Task;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@DataJpaTest
 public class TestCommentMapper {
 
     private CommentMapper commentMapper;
