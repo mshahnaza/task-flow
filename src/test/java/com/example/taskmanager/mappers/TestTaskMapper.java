@@ -16,13 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TestTaskMapper {
     private TaskMapper taskMapper;
 
-    @BeforeEach
-    void setUp() {
-        taskMapper = new TaskMapperImpl();
-    }
-
     @Test
     void testTaskToTaskDtoWithCommentCount() {
+        taskMapper = new TaskMapperImpl();
+
         Category category = new Category(1L, "Test Category", null);
         Task task = new Task(1L, "Test Task", "In Progress", "description", LocalDate.now(), List.of(category), null);
 
