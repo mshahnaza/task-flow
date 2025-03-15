@@ -20,4 +20,5 @@ public class TaskResponse {
     private String status;
     private LocalDate dueDate;
     private List<String> categories;
+    private int commentCount;
 }

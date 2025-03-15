@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -16,5 +17,6 @@ public class TaskRequest {
     private String title;
     private String description;
     private String status;
+    private LocalDate dueDate;
     private List<Long> category_ids;
 }

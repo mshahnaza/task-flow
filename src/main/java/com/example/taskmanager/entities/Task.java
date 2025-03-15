@@ -28,6 +28,6 @@ public class Task {
     @ManyToMany
     private List<Category> categories;
 
-    @OneToMany(mappedBy = "task")
+    @OneToMany(mappedBy = "task",  cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Comment> comments;
 }
