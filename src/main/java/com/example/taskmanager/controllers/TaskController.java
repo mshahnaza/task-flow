@@ -4,6 +4,8 @@ import com.example.taskmanager.dto.request.TaskRequest;
 import com.example.taskmanager.dto.response.TaskResponse;
 import com.example.taskmanager.services.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,18 +18,21 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping("/add")
-    public void addTask(@RequestBody TaskRequest taskRequest) {
-        taskService.addTask(taskRequest);
+    public ResponseEntity<TaskResponse> addTask(@RequestBody TaskRequest taskRequest) {
+        TaskResponse response = taskService.addTask(taskRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteTask(@PathVariable Long id) {
+    public ResponseEntity<String> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
+        return ResponseEntity.ok("Task deleted successfully");
     }
 
     @PatchMapping("/update/{id}")
-    public void updateTask(@PathVariable Long id, @RequestBody TaskRequest taskRequest) {
-        taskService.updateTask(id, taskRequest);
+    public ResponseEntity<TaskResponse> updateTask(@PathVariable Long id, @RequestBody TaskRequest taskRequest) {
+        TaskResponse response = taskService.updateTask(id, taskRequest);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

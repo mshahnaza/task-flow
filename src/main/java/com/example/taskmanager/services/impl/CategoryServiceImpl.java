@@ -21,13 +21,15 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
 
     @Override
-    public void addCategory(CategoryRequest categoryRequest) {
+    public CategoryResponse addCategory(CategoryRequest categoryRequest) {
         if(categoryRequest != null || categoryRequest.getName() != null || !(categoryRequest.getName().isEmpty())) {
             Category category = new Category();
             category.setName(categoryRequest.getName());
 
             categoryRepository.save(category);
+            return categoryMapper.categoryToCategoryDto(category);
         }
+        return null;
     }
 
     @Override

@@ -6,7 +6,7 @@ import com.example.taskmanager.dto.response.CategoryResponse;
 import java.util.List;
 
 public interface CategoryService {
-    void addCategory(CategoryRequest categoryRequest);
+    CategoryResponse addCategory(CategoryRequest categoryRequest);
 
     List<CategoryResponse> getAllCategories();
 

@@ -26,7 +26,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentMapper commentMapper;
 
     @Override
-    public void addComment(Long taskId, CommentRequest commentRequest) {
+    public CommentResponse addComment(Long taskId, CommentRequest commentRequest) {
         if (commentRequest != null || taskId != null || commentRequest.getContent() != null || !commentRequest.getContent().isEmpty()) {
             Comment comment = new Comment();
             comment.setContent(commentRequest.getContent());
@@ -37,7 +37,9 @@ public class CommentServiceImpl implements CommentService {
             comment.setTask(task);
 
             commentRepository.save(comment);
+            return commentMapper.commentToCommentDto(comment);
         }
+        return null;
     }
 
     @Override

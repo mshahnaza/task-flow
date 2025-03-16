@@ -27,7 +27,7 @@ public class TaskServiceImpl implements TaskService {
     private final CommentRepository commentRepository;
 
     @Override
-    public void addTask(TaskRequest taskRequest) {
+    public TaskResponse addTask(TaskRequest taskRequest) {
         if(taskRequest != null || taskRequest.getTitle() != null || !(taskRequest.getTitle().isEmpty())) {
             Task task = new Task();
             task.setTitle(taskRequest.getTitle());
@@ -41,7 +41,9 @@ public class TaskServiceImpl implements TaskService {
             }
 
             taskRepository.save(task);
+            return taskMapper.taskToTaskDto(task);
         }
+        return null;
     }
 
     @Override
@@ -69,7 +71,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void updateTask(Long id, TaskRequest taskRequest) {
+    public TaskResponse updateTask(Long id, TaskRequest taskRequest) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + id));
 
@@ -92,6 +94,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         taskRepository.save(task);
+        return taskMapper.taskToTaskDto(task, commentRepository.countByTask(task));
     }
 
     @Override

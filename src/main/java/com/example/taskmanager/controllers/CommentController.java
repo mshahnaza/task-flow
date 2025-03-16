@@ -4,6 +4,8 @@ import com.example.taskmanager.dto.request.CommentRequest;
 import com.example.taskmanager.dto.response.CommentResponse;
 import com.example.taskmanager.services.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,13 +18,15 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/add/{id}")
-    public void addComment(@PathVariable Long id, @RequestBody CommentRequest commentRequest) {
-        commentService.addComment(id,commentRequest);
+    public ResponseEntity<CommentResponse> addComment(@PathVariable Long id, @RequestBody CommentRequest commentRequest) {
+        CommentResponse response = commentService.addComment(id,commentRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteComment(@PathVariable Long id) {
+    public ResponseEntity<String> deleteComment(@PathVariable Long id) {
         commentService.deleteComment(id);
+        return ResponseEntity.ok("Comment deleted successfully");
     }
 
     @GetMapping("/all")
