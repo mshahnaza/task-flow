@@ -27,24 +27,31 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentResponse addComment(Long taskId, CommentRequest commentRequest) {
-        if (commentRequest != null || taskId != null || commentRequest.getContent() != null || !commentRequest.getContent().isEmpty()) {
-            Comment comment = new Comment();
-            comment.setContent(commentRequest.getContent());
-            comment.setCreatedAt(LocalDateTime.now());
-
-            Task task = taskRepository.findById(taskId)
-                    .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));
-            comment.setTask(task);
-
-            commentRepository.save(comment);
-            return commentMapper.commentToCommentDto(comment);
+        if (commentRequest == null || taskId == null || commentRequest.getContent() == null || commentRequest.getContent().isEmpty()) {
+            throw new IllegalArgumentException("Comment content cannot be null or empty.");
         }
-        return null;
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));
+
+        Comment comment = Comment.builder()
+            .content(commentRequest.getContent())
+            .createdAt(LocalDateTime.now())
+                .task(task)
+                .build();
+
+        commentRepository.save(comment);
+        return commentMapper.commentToCommentDto(comment);
     }
 
     @Override
     public List<CommentResponse> getaAllComments() {
-        return commentMapper.commentToCommentDtos(commentRepository.findAll());
+        List<Comment> comments = commentRepository.findAll();
+
+        if (comments.isEmpty()) {
+            throw new EntityNotFoundException("No comments found.");
+        }
+
+        return commentMapper.commentToCommentDtos(comments);
     }
 
     @Override
@@ -57,7 +64,16 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentResponse> getaAllCommentsByTaskId(Long taskId) {
-        List<Comment> comments = commentRepository.findByTaskId(taskId); // Получаем комментарии по taskId
+        if (taskId == null) {
+            throw new IllegalArgumentException("Task ID cannot be null.");
+        }
+
+        List<Comment> comments = commentRepository.findByTaskId(taskId);
+
+        if (comments.isEmpty()) {
+            throw new EntityNotFoundException("No comments found for task with id: " + taskId);
+        }
+
         return commentMapper.commentToCommentDtos(comments);
     }
 }

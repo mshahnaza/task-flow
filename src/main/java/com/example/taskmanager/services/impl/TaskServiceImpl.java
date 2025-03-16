@@ -28,22 +28,23 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponse addTask(TaskRequest taskRequest) {
-        if(taskRequest != null || taskRequest.getTitle() != null || !(taskRequest.getTitle().isEmpty())) {
-            Task task = new Task();
-            task.setTitle(taskRequest.getTitle());
-            task.setDescription(taskRequest.getDescription());
-            task.setStatus(taskRequest.getStatus());
-            task.setDueDate(taskRequest.getDueDate());
-
-            List<Category> categories = categoryRepository.findAllById(taskRequest.getCategory_ids());
-            if (categories != null && !categories.isEmpty()) {
-                task.setCategories(categories);
-            }
-
-            taskRepository.save(task);
-            return taskMapper.taskToTaskDto(task);
+        if(taskRequest == null || taskRequest.getTitle() == null || taskRequest.getTitle().isEmpty()) {
+            throw new IllegalArgumentException("Title cannot be null or empty.");
         }
-        return null;
+        Task task = Task.builder()
+                .title(taskRequest.getTitle())
+                .description(taskRequest.getDescription())
+                .status(taskRequest.getStatus())
+                .dueDate(taskRequest.getDueDate())
+                .build();
+
+        List<Category> categories = categoryRepository.findAllById(taskRequest.getCategory_ids());
+        if (categories == null || categories.isEmpty()) {
+            task.setCategories(categories);
+        }
+
+        taskRepository.save(task);
+        return taskMapper.taskToTaskDto(task);
     }
 
     @Override
@@ -53,6 +54,10 @@ public class TaskServiceImpl implements TaskService {
             tasks = taskRepository.findTasksSortedByCommentsAsc(status, categoryIds);
         } else {
             tasks = taskRepository.findTasksSortedByCommentsDesc(status, categoryIds);
+        }
+
+        if(tasks == null || tasks.isEmpty()) {
+            throw new EntityNotFoundException("No tasks found for status: " + status);
         }
 
         return tasks.stream()
@@ -72,6 +77,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponse updateTask(Long id, TaskRequest taskRequest) {
+        if (id == null) {
+            throw new IllegalArgumentException("Task id cannot be null.");
+        }
+
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + id));
 
