@@ -1,6 +1,6 @@
 package com.example.taskmanager.dto.request;
 
-import com.example.taskmanager.entities.Comment;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,8 +14,11 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class TaskRequest {
+    @NotNull(message = "Title cannot be null.")
     private String title;
     private String description;
+
+    @NotNull(message = "Status cannot be null.")
     private String status;
     private LocalDate dueDate;
     private List<Long> category_ids;

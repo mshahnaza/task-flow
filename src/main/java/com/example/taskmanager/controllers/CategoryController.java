@@ -6,6 +6,7 @@ import com.example.taskmanager.services.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping("/add")
-    public ResponseEntity<CategoryResponse> addCategory(@RequestBody CategoryRequest categoryRequest) {
+    public ResponseEntity<CategoryResponse> addCategory(@RequestBody @Validated CategoryRequest categoryRequest) {
         CategoryResponse response = categoryService.addCategory(categoryRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

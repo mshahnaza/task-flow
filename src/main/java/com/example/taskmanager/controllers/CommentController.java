@@ -6,6 +6,7 @@ import com.example.taskmanager.services.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/add/{id}")
-    public ResponseEntity<CommentResponse> addComment(@PathVariable Long id, @RequestBody CommentRequest commentRequest) {
+    public ResponseEntity<CommentResponse> addComment(@PathVariable Long id, @RequestBody @Validated CommentRequest commentRequest) {
         CommentResponse response = commentService.addComment(id,commentRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

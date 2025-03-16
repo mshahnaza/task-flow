@@ -1,4 +1,6 @@
 package com.example.taskmanager.dto.request;
+import jakarta.validation.constraints.NotNull;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,5 +12,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 public class CategoryRequest {
+    @NotNull(message = "Category name cannot be null")
     private String name;
 }

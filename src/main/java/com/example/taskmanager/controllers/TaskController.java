@@ -6,6 +6,7 @@ import com.example.taskmanager.services.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping("/add")
-    public ResponseEntity<TaskResponse> addTask(@RequestBody TaskRequest taskRequest) {
+    public ResponseEntity<TaskResponse> addTask(@RequestBody @Validated TaskRequest taskRequest) {
         TaskResponse response = taskService.addTask(taskRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -30,7 +31,7 @@ public class TaskController {
     }
 
     @PatchMapping("/update/{id}")
-    public ResponseEntity<TaskResponse> updateTask(@PathVariable Long id, @RequestBody TaskRequest taskRequest) {
+    public ResponseEntity<TaskResponse> updateTask(@PathVariable Long id, @RequestBody @Validated TaskRequest taskRequest) {
         TaskResponse response = taskService.updateTask(id, taskRequest);
         return ResponseEntity.ok(response);
     }
