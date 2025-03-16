@@ -27,8 +27,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentResponse addComment(Long taskId, CommentRequest commentRequest) {
-        if (commentRequest == null || taskId == null || commentRequest.getContent() == null || commentRequest.getContent().isEmpty()) {
-            throw new IllegalArgumentException("Comment content cannot be null or empty.");
+        if (commentRequest == null || taskId == null) {
+            throw new IllegalArgumentException("Comment or task id cannot be null.");
         }
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));

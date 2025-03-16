@@ -28,8 +28,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponse addTask(TaskRequest taskRequest) {
-        if(taskRequest == null || taskRequest.getTitle() == null || taskRequest.getTitle().isEmpty()) {
-            throw new IllegalArgumentException("Title cannot be null or empty.");
+        if(taskRequest == null) {
+            throw new IllegalArgumentException("Task cannot be null.");
         }
         Task task = Task.builder()
                 .title(taskRequest.getTitle())

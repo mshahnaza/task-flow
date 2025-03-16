@@ -22,8 +22,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponse addCategory(CategoryRequest categoryRequest) {
-        if(categoryRequest == null || categoryRequest.getName() == null || categoryRequest.getName().isEmpty()) {
-            throw new IllegalArgumentException("Category name cannot be null or empty");
+        if(categoryRequest == null) {
+            throw new IllegalArgumentException("Category cannot be null");
         }
         Category category = Category.builder()
             .name(categoryRequest.getName())
