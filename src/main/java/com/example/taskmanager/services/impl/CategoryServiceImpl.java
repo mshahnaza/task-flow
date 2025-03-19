@@ -17,36 +17,66 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
-
     private final CategoryMapper categoryMapper;
 
+    /**
+     * Adds a new category to the database.
+     *
+     * @param categoryRequest the request object containing category details
+     * @return CategoryResponse containing details of the created category
+     * @throws IllegalArgumentException if the categoryRequest is null
+     */
     @Override
     public CategoryResponse addCategory(CategoryRequest categoryRequest) {
-        if(categoryRequest == null) {
+        if (categoryRequest == null) {
             throw new IllegalArgumentException("Category cannot be null");
         }
+
+        // Creating a new category entity
         Category category = Category.builder()
-            .name(categoryRequest.getName())
+                .name(categoryRequest.getName())
                 .build();
 
+        // Saving the category in the repository
         categoryRepository.save(category);
+
+        // Mapping entity to response DTO
         return categoryMapper.categoryToCategoryDto(category);
     }
 
+    /**
+     * Retrieves all categories from the database.
+     *
+     * @return a list of CategoryResponse DTOs
+     * @throws EntityNotFoundException if no categories are found
+     */
     @Override
     public List<CategoryResponse> getAllCategories() {
+        // Fetching all categories from the repository
         List<Category> categories = categoryRepository.findAll();
+
+        // Throw an exception if no categories exist
         if (categories.isEmpty()) {
             throw new EntityNotFoundException("No categories found.");
         }
+
+        // Mapping entities to response DTOs
         return categoryMapper.categoryToCategoryDtos(categories);
     }
 
+    /**
+     * Deletes a category by its ID.
+     *
+     * @param id the ID of the category to delete
+     * @throws EntityNotFoundException if the category is not found
+     */
     @Override
     public void deleteCategory(Long id) {
+        // Find the category by ID or throw an exception if not found
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
 
+        // Deleting the category from the repository
         categoryRepository.delete(category);
     }
 }
