@@ -68,14 +68,14 @@ spring.jpa.hibernate.ddl-auto=update
 ```
 The H2 database console is available at: [http://localhost:8080/h2-console](http://localhost:8080/h2)
 
-There's also application-prod.properties for configuration of Postgres database
+There's also `application-prod.properties` for configuration of Postgres database
 ```
 spring.datasource.url=jdbc:postgresql://localhost:5432/task-flow
 spring.datasource.username=postgres
 spring.datasource.password=123456
 spring.jpa.hibernate.ddl-auto=update
 ```
-In application.properties active by default profile is dev
+In `application.properties` active by default profile is dev
 ```
 spring.application.name=task-manager
 
