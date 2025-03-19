@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,11 +32,8 @@ public class CategoryController {
                     @ApiResponse(responseCode = "201", description = "Category successfully created",
                             content = @Content(schema = @Schema(implementation = CategoryResponse.class))),
                     @ApiResponse(responseCode = "400", description = "Incorrect data")
-            },
-            requestBody = @RequestBody(
-                    description = "Category data",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryRequest.class))
-            ))
+            }
+    )
     public ResponseEntity<CategoryResponse> addCategory(@Validated @RequestBody CategoryRequest categoryRequest) {
         CategoryResponse response = categoryService.addCategory(categoryRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

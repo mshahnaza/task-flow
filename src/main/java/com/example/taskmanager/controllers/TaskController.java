@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,11 +33,7 @@ public class TaskController {
                     @ApiResponse(responseCode = "201", description = "Task successfully created",
                             content = @Content(schema = @Schema(implementation = TaskResponse.class))),
                     @ApiResponse(responseCode = "400", description = "Incorrect data")
-            },
-            requestBody = @RequestBody(
-                    description = "Task data",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TaskRequest.class))
-            )
+            }
     )
     public ResponseEntity<TaskResponse> addTask(@Validated @RequestBody TaskRequest taskRequest) {
         TaskResponse response = taskService.addTask(taskRequest);
@@ -69,11 +64,7 @@ public class TaskController {
                             content = @Content(schema = @Schema(implementation = TaskResponse.class))),
                     @ApiResponse(responseCode = "404", description = "Task not found")
             },
-            parameters = @Parameter(description = "Task ID to update"),
-            requestBody = @RequestBody(
-                    description = "New task data",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TaskRequest.class))
-            )
+            parameters = @Parameter(description = "Task ID to update")
     )
     public ResponseEntity<TaskResponse> updateTask(@PathVariable Long id, @RequestBody TaskRequest taskRequest) {
         TaskResponse response = taskService.updateTask(id, taskRequest);

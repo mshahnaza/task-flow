@@ -5,7 +5,6 @@ import com.example.taskmanager.dto.response.CommentResponse;
 import com.example.taskmanager.services.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,11 +34,8 @@ public class CommentController {
                             content = @Content(schema = @Schema(implementation = CommentResponse.class))),
                     @ApiResponse(responseCode = "400", description = "Incorrect data")
             },
-            parameters = {@Parameter(description = "Task ID to which comment is added")},
-            requestBody = @RequestBody(
-                    description = "Comment data",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CommentRequest.class))
-            ))
+            parameters = {@Parameter(description = "Task ID to which comment is added")}
+    )
     public ResponseEntity<CommentResponse> addComment(@PathVariable Long id, @Validated @RequestBody CommentRequest commentRequest) {
         CommentResponse response = commentService.addComment(id, commentRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
