@@ -18,6 +18,6 @@ public interface CommentMapper {
 
     @Named("taskToLong")
     default Long taskToLong(Task task) {
-        return task != null ? task.getId() : null; // Добавил проверку на null
+        return task != null ? task.getId() : null;
     }
 }
