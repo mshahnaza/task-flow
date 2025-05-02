@@ -11,4 +11,8 @@ public interface UserService {
     AuthResponse loginUser(LoginRequest loginRequest);
 
     UserResponse getUserByUsername(String username);
+
+    void verifyEmail(String token);
+
+    void resendVerification(String email);
 }

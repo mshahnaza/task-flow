@@ -8,6 +8,7 @@ import com.example.taskmanager.entities.User;
 import com.example.taskmanager.enums.Role;
 import com.example.taskmanager.mappers.UserMapper;
 import com.example.taskmanager.repositories.UserRepository;
+import com.example.taskmanager.services.EmailService;
 import com.example.taskmanager.services.JwtService;
 import com.example.taskmanager.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -38,6 +40,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private AuthenticationManager authenticationManager;
 
     private final JwtService jwtService;
+
+    private final EmailService emailService;
 
     @Autowired
     @Lazy
@@ -68,7 +72,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         User savedUser = userRepository.save(user);
 
-        //        emailService.sendVerificationEmail(savedUser);
+        emailService.sendVerificationEmail(savedUser);
 
         return userMapper.userToUserDto(savedUser);
     }
@@ -109,6 +113,29 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public UserResponse getUserByUsername(String username) {
         return userMapper.userToUserDto(userRepository.findByUsername(username).get());
+    }
+
+    public void verifyEmail(String token) {
+        User user = userRepository.findByVerificationCode(token)
+                .orElseThrow(() -> new RuntimeException("Invalid token"));
+
+        if (user.getVerificationCodeExpiration().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Token expired");
+        }
+
+        user.setEmailVerified(true);
+        user.setVerificationCode(null);
+        user.setVerificationCodeExpiration(null);
+        userRepository.save(user);
+    }
+
+    public void resendVerification(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email not found"));
+
+        user.setVerificationCode(generateVerificationCode());
+        userRepository.save(user);
+        emailService.sendVerificationEmail(user);
     }
 
     @Override
