@@ -1,5 +1,6 @@
 package com.example.taskmanager.services;
 
+import io.jsonwebtoken.Claims;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,5 +13,6 @@ public interface JwtService {
     String extractUsername(String token);
     Date extractExpiration(String token);
     boolean isTokenExpired(String token);
+    Claims extractAllClaims(String token);
 }
 
