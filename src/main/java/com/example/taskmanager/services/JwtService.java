@@ -1,7 +1,6 @@
 package com.example.taskmanager.services;
 
 import io.jsonwebtoken.Claims;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Date;
