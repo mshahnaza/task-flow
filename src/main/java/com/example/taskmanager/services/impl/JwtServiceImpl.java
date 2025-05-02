@@ -1,6 +1,5 @@
 package com.example.taskmanager.services.impl;
 
-import com.example.taskmanager.entities.User;
 import com.example.taskmanager.services.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -30,12 +29,6 @@ public class JwtServiceImpl implements JwtService {
 
     public String generateAccessToken(UserDetails userDetails) {
         return generateToken(userDetails, accessTokenExpiration);
-    }
-
-
-    @Override
-    public boolean validateAccessToken(String token) {
-        return false;
     }
 
     @Override
