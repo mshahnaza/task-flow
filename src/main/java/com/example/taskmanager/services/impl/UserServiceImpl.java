@@ -11,6 +11,8 @@ import com.example.taskmanager.repositories.UserRepository;
 import com.example.taskmanager.services.JwtService;
 import com.example.taskmanager.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,9 +35,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final BCryptPasswordEncoder passwordEncoder;
 
-    private final AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
 
     private final JwtService jwtService;
+
+    @Autowired
+    @Lazy
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
 
     @Override
     public UserResponse registerUser(RegisterRequest registerRequest) {
@@ -62,7 +70,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         //        emailService.sendVerificationEmail(savedUser);
 
-        return userMapper.userToUserDto(Optional.of(savedUser));
+        return userMapper.userToUserDto(savedUser);
     }
 
     @Override
@@ -100,7 +108,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserResponse getUserByUsername(String username) {
-        return userMapper.userToUserDto(userRepository.findByUsername(username));
+        return userMapper.userToUserDto(userRepository.findByUsername(username).get());
     }
 
     @Override

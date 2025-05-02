@@ -15,8 +15,8 @@ public interface UserMapper {
 
     UserDetailsDao userToUserDetailsDao(User user);
 
-    @Mapping(target = "roles", expression = "java(user.getRoles().stream().map(role -> role.getName().name()).toList())")
-    UserResponse userToUserDto(Optional<User> user);
+    @Mapping(target = "roles", expression = "java(user.getRoles().stream().map(role -> role.name()).toList())")
+    UserResponse userToUserDto(User user);
 
     List<UserResponse> userToUserDtos(List<User> users);
 }
