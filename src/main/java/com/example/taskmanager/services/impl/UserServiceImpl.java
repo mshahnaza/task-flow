@@ -11,11 +11,13 @@ import com.example.taskmanager.repositories.UserRepository;
 import com.example.taskmanager.services.EmailService;
 import com.example.taskmanager.services.JwtService;
 import com.example.taskmanager.services.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,8 +26,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -64,7 +66,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .username(registerRequest.getUsername())
                 .email(registerRequest.getEmail())
                 .password(encodedPassword)
-                .roles(Collections.singletonList(Role.USER))
+                .roles(Collections.singletonList(Role.ROLE_USER))
                 .emailVerified(false)
                 .verificationCode(generateVerificationCode())
                 .verificationCodeExpiration(LocalDateTime.now().plusHours(1))
@@ -106,6 +108,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .build();
     }
 
+    @Override
+    public List<UserResponse> getAllUsers() {
+        return userMapper.userToUserDtos(userRepository.findAll());
+    }
+
     private String generateVerificationCode() {
         return Long.toHexString(System.currentTimeMillis());
     }
@@ -115,6 +122,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userMapper.userToUserDto(userRepository.findByUsername(username).get());
     }
 
+    @Override
     public void verifyEmail(String token) {
         User user = userRepository.findByVerificationCode(token)
                 .orElseThrow(() -> new RuntimeException("Invalid token"));
@@ -129,6 +137,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userRepository.save(user);
     }
 
+    @Override
     public void resendVerification(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Email not found"));
@@ -140,10 +149,31 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> userOpt = userRepository.findByUsername(username);
+        Optional<User> userOpt;
+
+        // Check if email or username entered
+        if (username.contains("@")) {
+            userOpt = userRepository.findByEmail(username);
+        } else {
+            userOpt = userRepository.findByUsername(username);
+        }
         return userOpt.map(userMapper::userToUserDetailsDao)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("User with username '" + username + "' not found")
+                        new UsernameNotFoundException("User '" + username + "' not found")
                 );
+    }
+
+    @Override
+    public User getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Optional<User> userOpt;
+        if (username.contains("@")) {
+            userOpt = userRepository.findByEmail(username);
+        } else {
+            userOpt = userRepository.findByUsername(username);
+        }
+
+        return userOpt.orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
 }

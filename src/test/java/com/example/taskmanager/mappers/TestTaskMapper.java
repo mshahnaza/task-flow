@@ -3,6 +3,7 @@ package com.example.taskmanager.mappers;
 import com.example.taskmanager.dto.response.TaskResponse;
 import com.example.taskmanager.entities.Category;
 import com.example.taskmanager.entities.Task;
+import com.example.taskmanager.entities.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -20,8 +21,8 @@ public class TestTaskMapper {
     void testTaskToTaskDtoWithCommentCount() {
         taskMapper = new TaskMapperImpl();
 
-        Category category = new Category(1L, "Test Category", null);
-        Task task = new Task(1L, "Test Task", "In Progress", "description", LocalDate.now(), List.of(category), null);
+        Category category = new Category(1L, "Test Category", null, null);
+        Task task = new Task(1L, "Test Task", "In Progress", "description", LocalDate.now(), List.of(category), null, null);
 
         TaskResponse taskResponse = taskMapper.taskToTaskDto(task, 5);
 

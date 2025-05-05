@@ -24,4 +24,9 @@ public class Category {
     @ManyToMany(mappedBy = "categories")
     @OnDelete(action = OnDeleteAction.RESTRICT)
     private List<Task> tasks;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
 }

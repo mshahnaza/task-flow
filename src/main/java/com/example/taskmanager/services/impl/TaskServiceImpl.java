@@ -4,13 +4,16 @@ import com.example.taskmanager.dto.request.TaskRequest;
 import com.example.taskmanager.dto.response.TaskResponse;
 import com.example.taskmanager.entities.Category;
 import com.example.taskmanager.entities.Task;
+import com.example.taskmanager.entities.User;
 import com.example.taskmanager.mappers.TaskMapper;
 import com.example.taskmanager.repositories.CategoryRepository;
 import com.example.taskmanager.repositories.CommentRepository;
 import com.example.taskmanager.repositories.TaskRepository;
 import com.example.taskmanager.services.TaskService;
+import com.example.taskmanager.services.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +27,7 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final CategoryRepository categoryRepository;
     private final CommentRepository commentRepository;
+    private final UserService userService;
 
     /**
      * Adds a new task.
@@ -38,12 +42,15 @@ public class TaskServiceImpl implements TaskService {
             throw new IllegalArgumentException("Task cannot be null.");
         }
 
+        User user = userService.getCurrentUser();
+
         // Create a new Task entity
         Task task = Task.builder()
                 .title(taskRequest.getTitle())
                 .description(taskRequest.getDescription())
                 .status(taskRequest.getStatus())
                 .dueDate(taskRequest.getDueDate())
+                .user(user)
                 .build();
 
         // Retrieve and assign categories
@@ -70,11 +77,13 @@ public class TaskServiceImpl implements TaskService {
     public List<TaskResponse> getaAllTasks(String status, List<Long> categoryIds, String sortOrder) {
         List<Task> tasks;
 
+        User user = userService.getCurrentUser();
+
         // Sort tasks based on comments count
         if (sortOrder.equals("asc")) {
-            tasks = taskRepository.findTasksSortedByCommentsAsc(status, categoryIds);
+            tasks = taskRepository.findTasksSortedByCommentsAsc(status, categoryIds, user);
         } else {
-            tasks = taskRepository.findTasksSortedByCommentsDesc(status, categoryIds);
+            tasks = taskRepository.findTasksSortedByCommentsDesc(status, categoryIds, user);
         }
 
         // Check if tasks are empty and throw exception if necessary
@@ -95,6 +104,7 @@ public class TaskServiceImpl implements TaskService {
      * @return The task's response DTO.
      * @throws EntityNotFoundException If the task is not found with the specified ID.
      */
+    @PreAuthorize("@taskSecurity.isOwner(#id)")
     @Override
     public TaskResponse getTaskById(Long id) {
         // Find the task by ID or throw an exception if not found
@@ -118,6 +128,7 @@ public class TaskServiceImpl implements TaskService {
      * @throws EntityNotFoundException If the task is not found with the specified ID.
      */
     @Override
+    @PreAuthorize("@taskSecurity.isOwner(#id)")
     public TaskResponse updateTask(Long id, TaskRequest taskRequest) {
         if (id == null) {
             throw new IllegalArgumentException("Task id cannot be null.");
@@ -158,6 +169,7 @@ public class TaskServiceImpl implements TaskService {
      * @throws EntityNotFoundException If the task is not found with the specified ID.
      */
     @Override
+    @PreAuthorize("@taskSecurity.isOwner(#id)")
     public void deleteTask(Long id) {
         // Find the task by ID or throw an exception if not found
         Task task = taskRepository.findById(id)

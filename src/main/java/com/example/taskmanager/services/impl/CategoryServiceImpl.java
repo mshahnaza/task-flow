@@ -3,11 +3,14 @@ package com.example.taskmanager.services.impl;
 import com.example.taskmanager.dto.request.CategoryRequest;
 import com.example.taskmanager.dto.response.CategoryResponse;
 import com.example.taskmanager.entities.Category;
+import com.example.taskmanager.entities.User;
 import com.example.taskmanager.mappers.CategoryMapper;
 import com.example.taskmanager.repositories.CategoryRepository;
 import com.example.taskmanager.services.CategoryService;
+import com.example.taskmanager.services.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +21,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private final UserService userService;
 
     /**
      * Adds a new category to the database.
@@ -32,9 +36,12 @@ public class CategoryServiceImpl implements CategoryService {
             throw new IllegalArgumentException("Category cannot be null");
         }
 
+        User user = userService.getCurrentUser();
+
         // Creating a new category entity
         Category category = Category.builder()
                 .name(categoryRequest.getName())
+                .user(user)
                 .build();
 
         // Saving the category in the repository
@@ -71,6 +78,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @throws EntityNotFoundException if the category is not found
      */
     @Override
+    @PreAuthorize("(@categorySecurity.isOwner(#id) or hasRole('ADMIN'))")
     public void deleteCategory(Long id) {
         // Find the category by ID or throw an exception if not found
         Category category = categoryRepository.findById(id)
