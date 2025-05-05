@@ -9,6 +9,10 @@ import com.example.taskmanager.entities.User;
 import java.util.List;
 
 public interface UserService {
+    UserResponse addAdmin(RegisterRequest registerRequest);
+
+    void deleteUser(Long id);
+
     UserResponse registerUser(RegisterRequest registerRequest);
 
     AuthResponse loginUser(LoginRequest loginRequest);

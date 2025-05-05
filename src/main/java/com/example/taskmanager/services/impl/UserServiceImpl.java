@@ -52,6 +52,53 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public UserResponse addAdmin(RegisterRequest registerRequest) {
+        User currentUser = getCurrentUser();
+
+        if (!currentUser.hasRole(Role.ROLE_ADMIN)) {
+            throw new IllegalStateException("Not authorized to add admins");
+        }
+
+        if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
+            throw new RuntimeException("Username is already taken.");
+        }
+        if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+            throw new RuntimeException("Email is already registered.");
+        }
+
+        String encodedPassword = passwordEncoder.encode(registerRequest.getPassword());
+
+        User user = User.builder()
+                .username(registerRequest.getUsername())
+                .email(registerRequest.getEmail())
+                .password(encodedPassword)
+                .roles(Collections.singletonList(Role.ROLE_ADMIN))
+                .emailVerified(false)
+                .verificationCode(generateVerificationCode())
+                .verificationCodeExpiration(LocalDateTime.now().plusHours(1))
+                .build();
+
+        User savedUser = userRepository.save(user);
+
+        emailService.sendVerificationEmail(savedUser);
+
+        return userMapper.userToUserDto(savedUser);
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        User currentUser = getCurrentUser();
+        if (!currentUser.hasRole(Role.ROLE_ADMIN) && !currentUser.getId().equals(id)) {
+            throw new IllegalStateException("Not authorized to delete users");
+        }
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        userRepository.delete(user);
+    }
+
+    @Override
     public UserResponse registerUser(RegisterRequest registerRequest) {
         if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
             throw new RuntimeException("Username is already taken.");
@@ -179,4 +226,5 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         return userOpt.orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
+
 }

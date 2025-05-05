@@ -45,4 +45,8 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
+
+    public boolean hasRole(Role role) {
+        return this.roles.contains(role);
+    }
 }

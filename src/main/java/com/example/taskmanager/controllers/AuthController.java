@@ -40,4 +40,10 @@ public class AuthController {
         userService.resendVerification(email);
         return ResponseEntity.ok("Verification email resent.");
     }
+
+    @DeleteMapping("/user/delete")
+    public ResponseEntity<String> deleteUser() {
+        userService.deleteUser(userService.getCurrentUser().getId());
+        return ResponseEntity.ok("User deleted successfully.");
+    }
 }
