@@ -1,6 +1,7 @@
 package com.example.taskmanager.services.impl;
 
 import com.example.taskmanager.entities.User;
+import com.example.taskmanager.enums.Role;
 import com.example.taskmanager.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -34,27 +35,43 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService{
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
         String email = null;
+        String name = null;
 
         Map<String, Object> attributes = new HashMap<>(oAuth2User.getAttributes());
 
         if ("google".equals(registrationId)) {
             email = (String) attributes.get("email");
-            String name = (String) attributes.get("name");
+            name = (String) attributes.get("name");
 
             System.out.println("Google user: " + name + ", Email: " + email);
         } else if ("github".equals(registrationId)) {
             email = fetchGithubPrimaryEmail(userRequest);
             attributes.put("email", email);
-            System.out.println("GitHub user, email fetched: " + email);
+            attributes.put("name", name);
+            System.out.println("GitHub user, email fetched: " + email + ", name fetched: " + name);
         } else if ("facebook".equals(registrationId)) {
             email = (String) attributes.get("email");
-            String name = (String) attributes.get("name");
+            name = (String) attributes.get("name");
             System.out.println("Facebook user: " + name + ", Email: " + email);
         }
 
-        Optional<User> user = userRepository.findByEmail(email);
-        if(!user.get().isEmailVerified()) {
-            throw new IllegalStateException("Email is not verified");
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        User user;
+
+        if (userOptional.isPresent()) {
+            user = userOptional.get();
+
+            if (!user.isEmailVerified()) {
+                throw new IllegalStateException("Email is not verified");
+            }
+
+        } else {
+            user = new User();
+            user.setEmail(email);
+            user.setUsername(name);
+            user.setEmailVerified(true);
+            user.setRoles(List.of(Role.ROLE_USER));
+            userRepository.save(user);
         }
         System.out.println("Attributes from Google: " + attributes.keySet());
 
