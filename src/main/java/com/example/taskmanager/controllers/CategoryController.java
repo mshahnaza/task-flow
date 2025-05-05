@@ -4,6 +4,7 @@ import com.example.taskmanager.dto.request.CategoryRequest;
 import com.example.taskmanager.dto.response.CategoryResponse;
 import com.example.taskmanager.services.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -46,7 +47,9 @@ public class CategoryController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Category successfully deleted"),
                     @ApiResponse(responseCode = "404", description = "Category not found")
-            })
+            },
+            parameters = {@Parameter(name = "id", description = "ID of the category to delete", required = true)}
+    )
     public ResponseEntity<String> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.ok("Category deleted successfully");
@@ -55,7 +58,7 @@ public class CategoryController {
     @GetMapping("/all")
     @Operation(
             summary = "Get all categories",
-            description = "Retrieves all task categories.",
+            description = "Retrieves a list of all task categories.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "The list of categories has been successfully retrieved")
             })

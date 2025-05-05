@@ -27,14 +27,14 @@ public class CommentController {
 
     @PostMapping("/add/{id}")
     @Operation(
-            summary = "Add a comment",
+            summary = "Add a comment to a task",
             description = "Adds a comment to a task by task ID.",
+            parameters = {@Parameter(name = "id", description = "ID of the task to add the comment to", required = true)},
             responses = {
                     @ApiResponse(responseCode = "201", description = "Comment successfully added",
                             content = @Content(schema = @Schema(implementation = CommentResponse.class))),
                     @ApiResponse(responseCode = "400", description = "Incorrect data")
-            },
-            parameters = {@Parameter(description = "Task ID to which comment is added")}
+            }
     )
     public ResponseEntity<CommentResponse> addComment(@PathVariable Long id, @Validated @RequestBody CommentRequest commentRequest) {
         CommentResponse response = commentService.addComment(id, commentRequest);
@@ -49,7 +49,7 @@ public class CommentController {
                     @ApiResponse(responseCode = "200", description = "Comment successfully deleted"),
                     @ApiResponse(responseCode = "404", description = "Comment not found")
             },
-            parameters = {@Parameter(description = "Comment ID to delete")}
+            parameters = {@Parameter(name = "id", description = "ID of the comment to delete", required = true)}
     )
     public ResponseEntity<String> deleteComment(@PathVariable Long id) {
         commentService.deleteComment(id);
@@ -59,8 +59,9 @@ public class CommentController {
     @GetMapping("/all")
     @Operation(
             summary = "Get all comments",
-            description = "Retrieves all comments.",
-            responses = {@ApiResponse(responseCode = "200", description = "The list of categories has been successfully retrieved")}
+            description = "Retrieves a list of all comments.",
+            responses = {@ApiResponse(responseCode = "200", description = "List of comments successfully retrieved",
+                    content = @Content(schema = @Schema(implementation = CommentResponse.class, type = "array")))}
     )
     public List<CommentResponse> getAllComments() {
         return commentService.getaAllComments();
@@ -69,12 +70,13 @@ public class CommentController {
     @GetMapping("/task/{id}")
     @Operation(
             summary = "Get comments for a task",
-            description = "Retrieves all comments associated with a task.",
+            description = "Retrieves a list of all comments associated with a specific task.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Comments successfully found"),
+                    @ApiResponse(responseCode = "200", description = "Comments successfully found",
+                            content = @Content(schema = @Schema(implementation = CommentResponse.class, type = "array"))),
                     @ApiResponse(responseCode = "404", description = "Task not found")
             },
-            parameters = {@Parameter(description = "Task ID to retrieve comments for") })
+            parameters = {@Parameter(name = "id", description = "ID of the task to retrieve comments for", required = true) })
     public List<CommentResponse> getTaskComments(@PathVariable Long id) {
         return commentService.getaAllCommentsByTaskId(id);
     }

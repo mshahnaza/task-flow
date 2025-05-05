@@ -42,17 +42,17 @@ public class TaskController {
 
     @DeleteMapping("/delete/{id}")
     @Operation(
-            summary = "Delete a task",
-            description = "Deletes a task by ID.",
+            summary = "Delete task",
+            description = "Deletes current user's task by id",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Task successfully deleted"),
                     @ApiResponse(responseCode = "404", description = "Task not found")
             },
-            parameters = @Parameter(description = "Task ID to delete")
+            parameters = @Parameter(name = "id", description = "ID of task to delete", required = true)
     )
     public ResponseEntity<String> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
-        return ResponseEntity.ok("Task deleted successfully");
+        return ResponseEntity.ok("Task successfully deleted");
     }
 
     @PatchMapping("/update/{id}")
@@ -63,8 +63,7 @@ public class TaskController {
                     @ApiResponse(responseCode = "200", description = "Task successfully updated",
                             content = @Content(schema = @Schema(implementation = TaskResponse.class))),
                     @ApiResponse(responseCode = "404", description = "Task not found")
-            },
-            parameters = @Parameter(description = "Task ID to update")
+            }
     )
     public ResponseEntity<TaskResponse> updateTask(@PathVariable Long id, @RequestBody TaskRequest taskRequest) {
         TaskResponse response = taskService.updateTask(id, taskRequest);
@@ -73,14 +72,14 @@ public class TaskController {
 
     @GetMapping("/{id}")
     @Operation(
-            summary = "Get task by ID",
-            description = "Fetches a task using its ID.",
+            summary = "Get task ID",
+            description = "Retrievies task of current user by its ID",
             responses = {
-                @ApiResponse(responseCode = "200", description = "Task successfully retrieved",
-                    content = @Content(schema = @Schema(implementation = TaskResponse.class))),
-                @ApiResponse(responseCode = "404", description = "Task not found")
+                    @ApiResponse(responseCode = "200", description = "Task successfully retrieved",
+                            content = @Content(schema = @Schema(implementation = TaskResponse.class))),
+                    @ApiResponse(responseCode = "404", description = "Task not found")
             },
-            parameters = @Parameter(description = "Task ID to retrieve")
+            parameters = @Parameter(name = "id", description = "ID of task to get", required = true)
     )
     public TaskResponse getTaskById(@PathVariable Long id) {
         return taskService.getTaskById(id);
@@ -89,12 +88,13 @@ public class TaskController {
     @GetMapping("/all")
     @Operation(
             summary = "Get all tasks",
-            description = "Retrieves all tasks with optional filters.",
-            responses = {@ApiResponse(responseCode = "200", description = "Tasks list successfully retrieved")},
+            description = "Retrieves all task of current user by filters",
+            responses = {@ApiResponse(responseCode = "200", description = "List of task successfully retrieved",
+                    content = @Content(schema = @Schema(implementation = TaskResponse.class, type = "array")))},
             parameters = {
-                    @Parameter(name = "status", description = "Filter tasks by status (e.g., 'completed', 'pending')", required = false),
-                    @Parameter(name = "categoryIds", description = "Filter tasks by category IDs (comma-separated)", required = false),
-                    @Parameter(name = "sortOrder", description = "Sorting order: 'asc' or 'desc' (default: 'desc')", required = false, example = "desc")
+                    @Parameter(name = "status", description = "Filter by status ('COMPLETED', 'IN_PROGRESS')", required = false),
+                    @Parameter(name = "categoryIds", description = "Filter by categories ID", required = false),
+                    @Parameter(name = "sortOrder", description = "Sorting: 'asc' or 'desc' (by default: 'desc')", required = false, example = "desc")
             }
     )
     public List<TaskResponse> getAllTasks(
