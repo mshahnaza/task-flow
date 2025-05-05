@@ -19,6 +19,10 @@ public class TaskSecurity {
     public boolean isOwner(Long taskId) {
         User user = userService.getCurrentUser();
 
+        if (!taskRepository.existsById(taskId)) {
+            throw new EntityNotFoundException("Task with ID " + taskId + " not found");
+        }
+
         return taskRepository.findById(taskId)
                 .map(task -> task.getUser().getId().equals(user.getId()))
                 .orElse(false);

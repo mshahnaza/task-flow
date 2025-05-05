@@ -21,6 +21,10 @@ public class CategorySecurity {
     public boolean isOwner(Long categoryId) {
         User user = userService.getCurrentUser();
 
+        if (!categoryRepository.existsById(categoryId)) {
+            throw new EntityNotFoundException("Category with ID " + categoryId + " not found");
+        }
+
         return categoryRepository.findById(categoryId)
                 .map(category -> category.getUser().getId().equals(user.getId()))
                 .orElse(false);

@@ -34,6 +34,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private List<Role> roles;
 
+    private String refreshToken;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Category> categories;
 

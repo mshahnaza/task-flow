@@ -22,6 +22,10 @@ public class CommentSecurity {
     public boolean isOwner(Long commentId) {
         User user = userService.getCurrentUser();
 
+        if (!commentRepository.existsById(commentId)) {
+            throw new EntityNotFoundException("Comment with ID " + commentId + " not found");
+        }
+
         return commentRepository.findById(commentId)
                 .map(comment -> comment.getUser().getId().equals(user.getId()))
                 .orElse(false);
