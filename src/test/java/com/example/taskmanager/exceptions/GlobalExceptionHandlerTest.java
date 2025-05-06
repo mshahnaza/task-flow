@@ -6,6 +6,7 @@ import com.example.taskmanager.mappers.TaskMapper;
 import com.example.taskmanager.repositories.CategoryRepository;
 import com.example.taskmanager.repositories.CommentRepository;
 import com.example.taskmanager.repositories.TaskRepository;
+import com.example.taskmanager.services.UserService;
 import com.example.taskmanager.services.impl.TaskServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -28,6 +29,9 @@ public class GlobalExceptionHandlerTest {
 
     @Mock
     private TaskRepository taskRepository;
+
+    @Mock
+    private UserService userService;
 
     @Mock
     private CategoryRepository categoryRepository;
