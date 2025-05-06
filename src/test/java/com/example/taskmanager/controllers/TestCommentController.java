@@ -3,6 +3,8 @@ package com.example.taskmanager.controllers;
 import com.example.taskmanager.dto.request.CommentRequest;
 import com.example.taskmanager.dto.response.CommentResponse;
 import com.example.taskmanager.services.CommentService;
+import com.example.taskmanager.services.JwtService;
+import com.example.taskmanager.services.impl.CustomOauth2UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -27,7 +31,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = CommentController.class)
-@AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
 public class TestCommentController {
 
@@ -36,6 +39,15 @@ public class TestCommentController {
 
     @MockitoBean
     private CommentService commentService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
+
+    @MockitoBean
+    private CustomOauth2UserService oauth2UserService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -54,6 +66,7 @@ public class TestCommentController {
         given(commentService.addComment(ArgumentMatchers.anyLong(), ArgumentMatchers.any())).willReturn(commentResponse);
 
         ResultActions response = mockMvc.perform(post("/comment/add/1")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(commentRequest)));
 
@@ -67,6 +80,7 @@ public class TestCommentController {
         doNothing().when(commentService).deleteComment(1L);
 
         ResultActions response = mockMvc.perform(delete("/comment/delete/1")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(status().isOk())
@@ -79,6 +93,7 @@ public class TestCommentController {
         given(commentService.getaAllComments()).willReturn(commentList);
 
         ResultActions response = mockMvc.perform(get("/comment/all")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(status().isOk())
@@ -91,6 +106,7 @@ public class TestCommentController {
         given(commentService.getaAllCommentsByTaskId(1L)).willReturn(commentList);
 
         ResultActions response = mockMvc.perform(get("/comment/task/1")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(status().isOk())

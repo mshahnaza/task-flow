@@ -3,6 +3,8 @@ package com.example.taskmanager.controllers;
 import com.example.taskmanager.dto.request.CategoryRequest;
 import com.example.taskmanager.dto.response.CategoryResponse;
 import com.example.taskmanager.services.CategoryService;
+import com.example.taskmanager.services.JwtService;
+import com.example.taskmanager.services.impl.CustomOauth2UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -36,6 +40,15 @@ public class TestCategoryController {
     @MockitoBean
     private CategoryService categoryService;
 
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
+
+    @MockitoBean
+    private CustomOauth2UserService oauth2UserService;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -53,6 +66,7 @@ public class TestCategoryController {
         given(categoryService.addCategory(ArgumentMatchers.any())).willReturn(categoryResponse);
 
         ResultActions response = mockMvc.perform(post("/category/add")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(categoryRequest)));
 
@@ -66,6 +80,7 @@ public class TestCategoryController {
         doNothing().when(categoryService).deleteCategory(1L);
 
         ResultActions response = mockMvc.perform(delete("/category/delete/1")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(status().isOk())
@@ -78,6 +93,7 @@ public class TestCategoryController {
         given(categoryService.getAllCategories()).willReturn(categoryList);
 
         ResultActions response = mockMvc.perform(get("/category/all")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(status().isOk())

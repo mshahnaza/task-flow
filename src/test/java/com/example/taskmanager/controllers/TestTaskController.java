@@ -3,7 +3,9 @@ package com.example.taskmanager.controllers;
 import com.example.taskmanager.dto.request.TaskRequest;
 import com.example.taskmanager.dto.response.TaskResponse;
 import com.example.taskmanager.entities.Category;
+import com.example.taskmanager.services.JwtService;
 import com.example.taskmanager.services.TaskService;
+import com.example.taskmanager.services.impl.CustomOauth2UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +16,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -30,7 +35,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @WebMvcTest(controllers = TaskController.class)
-@AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
 public class TestTaskController {
 
@@ -39,6 +43,15 @@ public class TestTaskController {
 
     @MockitoBean
     private TaskService taskService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
+
+    @MockitoBean
+    private CustomOauth2UserService oauth2UserService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -64,6 +77,7 @@ public class TestTaskController {
         given(taskService.addTask(ArgumentMatchers.any())).willReturn(taskResponse);
 
         ResultActions response = mockMvc.perform(post("/task/add")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(taskRequest)));
 
@@ -79,10 +93,11 @@ public class TestTaskController {
         doNothing().when(taskService).deleteTask(1L);
 
         ResultActions response = mockMvc.perform(delete("/task/delete/1")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Task deleted successfully"));
+                .andExpect(MockMvcResultMatchers.content().string("Task successfully deleted"));
     }
 
     @Test
@@ -90,6 +105,7 @@ public class TestTaskController {
         when(taskService.updateTask(1L, taskRequest)).thenReturn(taskResponse);
 
         ResultActions response = mockMvc.perform(patch("/task/update/1")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(taskRequest)));
 
@@ -105,6 +121,7 @@ public class TestTaskController {
         when(taskService.getTaskById(1L)).thenReturn(taskResponse);
 
         ResultActions response = mockMvc.perform(get("/task/1")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isOk())
@@ -120,6 +137,7 @@ public class TestTaskController {
         when(taskService.getaAllTasks(null, null, "desc")).thenReturn(taskList);
 
         ResultActions response = mockMvc.perform(get("/task/all")
+                        .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("sortOrder", "desc"));
 
