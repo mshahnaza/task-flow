@@ -47,6 +47,7 @@ public class TestTaskRepository {
 
         Category category = new Category();
         category.setName("Work");
+        category.setUser(user1);
         categoryRepository.save(category);
 
         Task task1 = new Task();
@@ -66,34 +67,35 @@ public class TestTaskRepository {
         Comment comment = new Comment();
         comment.setContent("Comment 1");
         comment.setTask(task1);
+        comment.setUser(user1);
         commentRepository.save(comment);
 
         //test when there's status only
-        List<Task> statusSortedTasks = taskRepository.findTasksSortedByCommentsAsc("In Progress", null, null);
+        List<Task> statusSortedTasks = taskRepository.findTasksSortedByCommentsAsc("In Progress", null, user1);
 
         assertThat(statusSortedTasks).isNotNull();
         assertThat(statusSortedTasks.size()).isEqualTo(1);
         assertThat(statusSortedTasks.get(0).getTitle()).isEqualTo("Task 1");
 
         //test when there's category only
-        List<Task> categorySortedTaskes = taskRepository.findTasksSortedByCommentsAsc(null, Arrays.asList(category.getId()), null);
+        List<Task> categorySortedTaskes = taskRepository.findTasksSortedByCommentsAsc(null, Arrays.asList(category.getId()), user2);
 
         assertThat(categorySortedTaskes).isNotNull();
-        assertThat(categorySortedTaskes.size()).isEqualTo(2);
+        assertThat(categorySortedTaskes.size()).isEqualTo(1);
         assertThat(categorySortedTaskes.get(0).getTitle()).isEqualTo("Task 2");
 
-        //test when there's both category, status & user
+        //test when there's both category, status
         List<Task> sortedTaskes = taskRepository.findTasksSortedByCommentsAsc("Completed", Arrays.asList(1L), user1);
 
         assertThat(sortedTaskes).isNotNull();
         assertThat(sortedTaskes.size()).isEqualTo(0);
 
         //test when there's no sorting requirements
-        List<Task> notSortedTaskes = taskRepository.findTasksSortedByCommentsAsc(null, null, null);
+        List<Task> notSortedTaskes = taskRepository.findTasksSortedByCommentsAsc(null, null, user1);
 
         assertThat(notSortedTaskes).isNotNull();
-        assertThat(notSortedTaskes.size()).isEqualTo(2);
-        assertThat(notSortedTaskes.get(0).getTitle()).isEqualTo("Task 2");
+        assertThat(notSortedTaskes.size()).isEqualTo(1);
+        assertThat(notSortedTaskes.get(0).getTitle()).isEqualTo("Task 1");
     }
 
     @Test
@@ -116,6 +118,7 @@ public class TestTaskRepository {
 
         Category category = new Category();
         category.setName("Work");
+        category.setUser(user1);
         categoryRepository.save(category);
 
         Task task1 = new Task();
@@ -129,38 +132,40 @@ public class TestTaskRepository {
         task2.setTitle("Task 2");
         task2.setStatus("Completed");
         task2.setCategories(Arrays.asList(category));
+        task2.setUser(user2);
         taskRepository.save(task2);
 
         Comment comment = new Comment();
         comment.setContent("Comment 1");
         comment.setTask(task1);
+        comment.setUser(user1);
         commentRepository.save(comment);
 
         //test when there's status only
-        List<Task> statusSortedTasks = taskRepository.findTasksSortedByCommentsDesc("In Progress", null, null);
+        List<Task> statusSortedTasks = taskRepository.findTasksSortedByCommentsDesc("In Progress", null, user1);
 
         assertThat(statusSortedTasks).isNotNull();
         assertThat(statusSortedTasks.size()).isEqualTo(1);
         assertThat(statusSortedTasks.get(0).getTitle()).isEqualTo("Task 1");
 
         //test when there's category only
-        List<Task> categorySortedTaskes = taskRepository.findTasksSortedByCommentsDesc(null, Arrays.asList(category.getId()), null);
+        List<Task> categorySortedTaskes = taskRepository.findTasksSortedByCommentsDesc(null, Arrays.asList(category.getId()), user2);
 
         assertThat(categorySortedTaskes).isNotNull();
-        assertThat(categorySortedTaskes.size()).isEqualTo(2);
-        assertThat(categorySortedTaskes.get(0).getTitle()).isEqualTo("Task 1");
+        assertThat(categorySortedTaskes.size()).isEqualTo(1);
+        assertThat(categorySortedTaskes.get(0).getTitle()).isEqualTo("Task 2");
 
-        //test when there's both category, status & user
+        //test when there's both category, status
         List<Task> sortedTaskes = taskRepository.findTasksSortedByCommentsDesc("Completed", Arrays.asList(1L), user2);
 
         assertThat(sortedTaskes).isNotNull();
-        assertThat(sortedTaskes.size()).isEqualTo(1);
+        assertThat(sortedTaskes.size()).isEqualTo(0);
 
         //test when there's no sorting requirements
-        List<Task> notSortedTaskes = taskRepository.findTasksSortedByCommentsDesc(null, null, null);
+        List<Task> notSortedTaskes = taskRepository.findTasksSortedByCommentsDesc(null, null, user2);
 
         assertThat(notSortedTaskes).isNotNull();
-        assertThat(notSortedTaskes.size()).isEqualTo(2);
-        assertThat(notSortedTaskes.get(0).getTitle()).isEqualTo("Task 1");
+        assertThat(notSortedTaskes.size()).isEqualTo(1);
+        assertThat(notSortedTaskes.get(0).getTitle()).isEqualTo("Task 2");
     }
 }
