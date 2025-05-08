@@ -55,7 +55,7 @@ public class TaskServiceImpl implements TaskService {
 
         // Retrieve and assign categories
         List<Category> categories = categoryRepository.findAllById(taskRequest.getCategory_ids());
-        if (categories == null || categories.isEmpty()) {
+        if (categories != null && !categories.isEmpty()) {
             task.setCategories(categories);
         }
 
